@@ -3,6 +3,7 @@ from db import repo
 
 MODULES = ("speaking", "writing", "reading", "listening")
 MIN_POINTS = 3
+MISTAKE_MODULES = ("writing", "speaking")  # помилки яких модулів показуємо в «Повторюваних помилках»
 
 
 def _trend(perfs: list[float]) -> str:
@@ -58,7 +59,7 @@ def get_progress(student_id: str, period_days: int | None = 90) -> dict:
     stats = module_stats(student_id, period_days)
     attempts = repo.list_attempts(student_id, since_days=period_days)
     minutes = round(sum((a["elapsed_seconds"] or 0) for a in attempts) / 60)
-    mistakes = repo.open_mistakes(student_id, limit=8)
+    mistakes = repo.open_mistakes(student_id, limit=8, modules=MISTAKE_MODULES)  # лише Writing і Speaking
     return {"modules": {m: {**v, "last_practiced_at": str(v["last_practiced_at"] or "")} for m, v in stats.items()},
             "total_attempts": sum(v["attempts"] for v in stats.values()), "practice_minutes": minutes,
             "open_mistakes": [{"module": x["module"], "subskill": x["subskill"], "original": x["original"][:80],

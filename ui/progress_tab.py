@@ -17,7 +17,6 @@ def build(sid: gr.State):
     rec = gr.Markdown(elem_classes="result")
     table = gr.Dataframe(label="По модулях (з джерелом оцінки)", interactive=False, wrap=True)
     mist = gr.Dataframe(label="Повторювані помилки", interactive=False, wrap=True)
-    note = gr.Markdown(elem_classes="result")
     plan_md = gr.Markdown(elem_classes="result")
 
     def _plan_text(sid_):
@@ -39,7 +38,7 @@ def build(sid: gr.State):
         ms = pd.DataFrame(prog["open_mistakes"] or [{"module": "-", "subskill": "-", "original": "-",
                                                        "correction": "-", "times": 0, "status": "-"}])
         rec_md = f"### Наступний крок\n**{nxt['reason']}**" + (f"\n\nМодуль: `{nxt.get('module')}`" if nxt.get("module") else "")
-        return rec_md, pd.DataFrame(rows), ms, f"Хвилин практики: **{prog['practice_minutes']}** · {prog['note']}", _plan_text(sid_)
+        return rec_md, pd.DataFrame(rows), ms, _plan_text(sid_)
 
     @guard
     def do_plan(sid_):
@@ -47,5 +46,5 @@ def build(sid: gr.State):
         planner.create_plan(sid_, 14)
         return _plan_text(sid_)
 
-    refresh.click(do_refresh, [sid, period], [rec, table, mist, note, plan_md])
+    refresh.click(do_refresh, [sid, period], [rec, table, mist, plan_md])
     mkplan.click(do_plan, sid, plan_md)
