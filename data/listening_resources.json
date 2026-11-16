@@ -1,0 +1,47 @@
+[
+  {
+    "resource_id": "british-council-listening-hub",
+    "title": "LearnEnglish Listening (вправи за рівнями)",
+    "provider": "British Council",
+    "url": "https://learnenglish.britishcouncil.org/skills/listening",
+    "level": "A2-C1",
+    "topics": ["general", "education", "work", "travel"],
+    "exercise_type": "mixed",
+    "estimated_minutes": 20,
+    "ielts_relevance": "general listening",
+    "answer_key_available": "partial",
+    "last_verified_at": null,
+    "status": "active",
+    "usage_notes": "Хаб: оберіть вправу свого рівня; сайт сам показує результат після перевірки."
+  },
+  {
+    "resource_id": "bbc-learning-english-hub",
+    "title": "BBC Learning English",
+    "provider": "BBC",
+    "url": "https://www.bbc.co.uk/learningenglish",
+    "level": "A2-C1",
+    "topics": ["general", "technology", "culture", "environment"],
+    "exercise_type": "monologue/discussion",
+    "estimated_minutes": 15,
+    "ielts_relevance": "general listening",
+    "answer_key_available": "partial",
+    "last_verified_at": null,
+    "status": "active",
+    "usage_notes": "Хаб: оберіть коротку програму + квіз; фіксуйте кількість правильних відповідей."
+  },
+  {
+    "resource_id": "ielts-official-preparation",
+    "title": "IELTS Official Preparation Resources",
+    "provider": "IELTS.org",
+    "url": "https://ielts.org/take-a-test/preparation-resources",
+    "level": "B1-C1",
+    "topics": ["general", "education"],
+    "exercise_type": "IELTS sample tasks",
+    "estimated_minutes": 30,
+    "ielts_relevance": "official",
+    "answer_key_available": "partial",
+    "last_verified_at": null,
+    "status": "active",
+    "usage_notes": "Офіційні матеріали; перевірте ключ на сторінці вправи."
+  }
+]
