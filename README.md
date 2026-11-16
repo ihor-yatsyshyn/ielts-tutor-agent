@@ -36,7 +36,6 @@ modules/            writing / reading / speaking / listening
 ui/                 вкладки Gradio
 data/               каталог Listening, теми
 tests/              pytest (FakeLLM, без мережі)
-docs/GUIDE.md       інструкція для команди (гілки, коміти, ролі)
 ```
 
 ## Відомі обмеження
