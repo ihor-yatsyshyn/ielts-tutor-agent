@@ -77,6 +77,8 @@ def get_next_activity(student_id: str, preferred_module: str | None = None,
         p = pending[0]
         return {"type": "continue", "exercise_id": p["id"], "module": p["module"], "title": p["title"],
                 "tab": TAB_NAMES.get(p["module"], p["module"]),
+                "how_to_start": (f"Перейдіть на вкладку «{TAB_NAMES.get(p['module'], p['module'])}»: "
+                                 f"незавершена вправа «{p['title']}» відкриється автоматично"),
                 "reason": "У вас є незавершена вправа, доведемо її до кінця."}
     rows = score_modules(student_id, preferred_module)
     if preferred_module:  # явний запит студента має пріоритет

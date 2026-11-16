@@ -1,5 +1,6 @@
 """Єдина точка входу для вправ (використовують і UI, і tools). Модулі підключаються за назвою."""
 import importlib
+import re
 import uuid
 
 import config
@@ -23,6 +24,35 @@ def generate(student_id: str, module: str, exercise_type=None, topic=None, diffi
     return {"exercise_id": ex["id"], "module": module, "title": ex["title"],
             "estimated_minutes": ex["content_json"].get("estimated_minutes"),
             "display_markdown": mod.render_task(ex)}
+
+
+_UUID_RE = re.compile(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
+
+
+def list_open(student_id: str, module: str | None = None, limit: int = 20) -> list[dict]:
+    """Незавершені вправи студента (нові першими), за потреби лише одного модуля."""
+    return [{"exercise_id": r["id"], "module": r["module"], "title": r["title"]}
+            for r in repo.list_active_exercises(student_id, limit, module)]
+
+
+def open_exercise(student_id: str, raw: str, module: str | None = None) -> dict:
+    """Відкриває власну незавершену вправу за ID (або за текстом, що містить ID)."""
+    m = _UUID_RE.search(raw or "")
+    if not m:
+        raise AppError("VALIDATION_ERROR", "Не вдалося розпізнати ID вправи.")
+    ex = repo.get_exercise(student_id, m.group(0).lower())  # None і для чужої вправи
+    if ex is None or (module and ex["module"] != module):
+        raise AppError("NOT_FOUND", "Вправу не знайдено на цій вкладці.")
+    if ex["status"] == "completed":
+        raise AppError("CONFLICT", "Цю вправу вже завершено. Згенеруйте нову.")
+    return {"exercise_id": ex["id"], "module": ex["module"], "title": ex["title"],
+            "content": ex["content_json"], "display_markdown": _mod(ex["module"]).render_task(ex)}
+
+
+def resume_latest(student_id: str, module: str) -> dict | None:
+    """Остання незавершена вправа модуля (для автовідкриття на вкладці) або None."""
+    rows = list_open(student_id, module, 1)
+    return open_exercise(student_id, rows[0]["exercise_id"], module) if rows else None
 
 
 def student_view(student_id: str, exercise_id: str) -> dict:

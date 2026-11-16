@@ -119,11 +119,13 @@ def get_exercise(student_id: str, exercise_id: str) -> dict | None:
         return to_dict(ex)
 
 
-def list_active_exercises(student_id: str, limit: int = 5) -> list[dict]:
+def list_active_exercises(student_id: str, limit: int = 5, module: str | None = None) -> list[dict]:
     with session_scope() as s:
-        rows = s.scalars(select(Exercise).where(Exercise.student_id == student_id,
-                                                Exercise.status.in_(["assigned", "in_progress"]))
-                         .order_by(Exercise.created_at.desc()).limit(limit)).all()
+        q = select(Exercise).where(Exercise.student_id == student_id,
+                                   Exercise.status.in_(["assigned", "in_progress"]))
+        if module:
+            q = q.where(Exercise.module == module)
+        rows = s.scalars(q.order_by(Exercise.created_at.desc()).limit(limit)).all()
         return [to_dict(r) for r in rows]
 
 
@@ -198,11 +200,14 @@ def add_mistake(student_id, attempt_id, module, subskill, original, correction, 
         return to_dict(m)
 
 
-def open_mistakes(student_id: str, module: str | None = None, limit: int = 10) -> list[dict]:
+def open_mistakes(student_id: str, module: str | None = None, limit: int = 10,
+                  modules: tuple[str, ...] | None = None) -> list[dict]:
     with session_scope() as s:
         q = select(Mistake).where(Mistake.student_id == student_id, Mistake.status != "resolved")
         if module:
             q = q.where(Mistake.module == module)
+        if modules:
+            q = q.where(Mistake.module.in_(modules))
         q = q.order_by(Mistake.recurrence_count.desc(), Mistake.updated_at.desc()).limit(limit)
         return [to_dict(m) for m in s.scalars(q)]
 

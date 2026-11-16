@@ -126,3 +126,22 @@ def test_listening_validation_and_provenance(student):
     r = listening.submit(student["id"], aid, correct=6, total=8, difficult=["3", "7"])
     assert r["evaluation"]["score_status"] == "self_reported" and r["evaluation"]["band_estimate"] is None
     assert "self-reported" in r["display_markdown"]
+
+
+def test_open_exercise_only_unfinished_and_own(student, student2):
+    from errors import AppError
+    from services import exercises
+    ex = _writing_task(student["id"])
+    r = exercises.open_exercise(student["id"], f"Відкрийте вправу (exercise_id = {ex['id']})", "writing")
+    assert r["exercise_id"] == ex["id"] and r["display_markdown"]
+    assert [x["exercise_id"] for x in exercises.list_open(student["id"], "writing")] == [ex["id"]]
+    for sid_, raw, mod in [(student2["id"], ex["id"], "writing"),   # чужа вправа
+                           (student["id"], ex["id"], "reading"),    # не той модуль
+                           (student["id"], "not-an-id", None)]:     # некоректний ID
+        with pytest.raises(AppError):
+            exercises.open_exercise(sid_, raw, mod)
+    from db import repo
+    repo.set_exercise_status(student["id"], ex["id"], "completed")
+    with pytest.raises(AppError) as e:                              # завершена
+        exercises.open_exercise(student["id"], ex["id"], "writing")
+    assert e.value.code == "CONFLICT" and exercises.list_open(student["id"]) == []
