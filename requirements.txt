@@ -1,0 +1,7 @@
+gradio==5.49.1
+groq==1.7.0
+sqlalchemy>=2.0,<3
+pydantic>=2.6,<3
+python-dotenv>=1.0
+pandas>=2.0
+pytest>=8.0
